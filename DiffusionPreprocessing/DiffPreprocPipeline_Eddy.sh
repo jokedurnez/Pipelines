@@ -493,7 +493,6 @@ main()
 	run_eddy_cmd+=" ${rms_option} "
 	run_eddy_cmd+=" ${ff_option} "
 	run_eddy_cmd+=" ${ol_nstd_value_option} "
-	run_eddy_cmd+=" -g "
 	run_eddy_cmd+=" -w ${outdir}/eddy "
 
 	if [ ! -z "${dont_peas}" ] ; then
