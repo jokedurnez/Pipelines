@@ -166,6 +166,7 @@ PARAMETERs are: [ ] = optional; < > = user supplied value
                               acquired
                           0 - As 1, but also include uncombined single volumes
                           Defaults to 1
+  [--no-gpu]              Turn off GPU with eddy.
 
 Return Status Value:
 
@@ -220,6 +221,7 @@ EOF
 #  ${CombineDataFlag}     CombineDataFlag value to pass to 
 #                         DiffPreprocPipeline_PostEddy.sh script and 
 #                         subsequently to eddy_postproc.sh script
+#  ${no-gpu}              Option for no GPU
 #
 get_options()
 {
@@ -310,6 +312,10 @@ get_options()
 				CombineDataFlag=${argument#*=}
 				index=$(( index + 1 ))
 				;;
+			--no-gpu)
+				no_gpu="True"
+				index=$(( index + 1 ))
+				;;
 			*)
 				usage
 				echo "ERROR: Unrecognized Option: ${argument}"
@@ -383,6 +389,7 @@ get_options()
 	echo "   runcmd: ${runcmd}"
 	echo "   CombineDataFlag: ${CombineDataFlag}"
 	echo "   extra_eddy_args: ${extra_eddy_args}"
+	echo "   no-gpu: ${no_gpu}"
 	echo "-- ${SCRIPT_NAME}: Specified Command-Line Parameters - End --"
 }
 
@@ -472,6 +479,9 @@ main()
 		for extra_eddy_arg in ${extra_eddy_args} ; do
 			eddy_cmd+=" --extra-eddy-arg=${extra_eddy_arg} "
 		done
+	fi
+	if [ "${no_gpu}" = "True" ] ; then
+		eddy_cmd+=" --no-gpu "
 	fi
 
 	log_Msg "eddy_cmd: ${eddy_cmd}"
