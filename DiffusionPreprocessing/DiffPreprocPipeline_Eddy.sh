@@ -156,6 +156,7 @@ PARAMETERs are: [ ] = optional; < > = user supplied value
                           --extra-eddy-arg=--verbose --extra-eddy-arg=T 
                           will ultimately be translated to --verbose T when
                           passed to the eddy binary.
+  [--no-gpu]              Turn off GPU with eddy.
 
 Return Status Value:
 
@@ -205,6 +206,7 @@ EOF
 #  ${ol_nstd_value}        Value of user specified --ol_nstd= parameter
 #  ${extra_eddy_args}      Value of user specified --extra-eddy-arg parameters, space 
 #                          separated tokens
+#  ${no-gpu}               Value of user specified --no-gpu argument
 #
 get_options()
 {
@@ -226,6 +228,7 @@ get_options()
 	resamp_value=""
 	unset ol_nstd_value
 	extra_eddy_args=""
+	no_gpu="False"
 	
 	# parse arguments
 	local index=0
@@ -325,6 +328,11 @@ get_options()
 				extra_eddy_args+=" ${extra_eddy_arg} "
 				index=$(( index + 1 ))
 				;;
+			--no-gpu)
+				no_gpu="True"
+				index=$(( index + 1 ))
+				;;
+
 			*)
 				usage
 				echo "ERROR: Unrecognized Option: ${argument}"
@@ -372,6 +380,7 @@ get_options()
 	echo "   resamp_value: ${resamp_value}"
 	echo "   ol_nstd_value: ${ol_nstd_value}"
 	echo "   extra_eddy_args: ${extra_eddy_args}"
+	echo "   no-gpu: ${no_gpu}"
 	echo "-- ${SCRIPT_NAME}: Specified Command-Line Parameters - End --"
 }
 
@@ -490,6 +499,10 @@ main()
 	if [ ! -z "${dont_peas}" ] ; then
 		run_eddy_cmd+=" --dont_peas "
 	fi
+	if [ "${no_gpu}" = "False" ] ; then
+		run_eddy_cmd+=" -g "
+	fi
+
 
 	run_eddy_cmd+=" --fwhm=${fwhm_value} "
 
