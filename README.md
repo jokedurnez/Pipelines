@@ -25,3 +25,12 @@ hcp-users discussion list. Sign up for hcp-users at
 [FAQ]: https://github.com/Washington-University/Pipelines/wiki/FAQ
 [wiki]: https://github.com/Washington-University/Pipelines/wiki
 [hcp-users-subscribe]: http://humanconnectome.org/contact/#subscribe
+
+# Difference from main repo
+
+This repository and the changes made, were done in order to create a BIDS-application for the HCP pipelines.  The reasons for the commits are:
+- remove local-affine-method.  See this discussion: https://www.mail-archive.com/hcp-users@humanconnectome.org/msg05803.html.  The option `-local-affine-method` is not included in the latest release of connectome-workbench, so shouldn't be included in the pipelines*. 
+- add option for non-gpu.  The latest version assumes that DWI data will be analysed on GPU.  I added an option to "turn off GPU" when using the bids-app.
+
+
+*_I've tried to compile connectome-wb from source in a container for 6 days on Ubuntu 14.04, 16.04, 17.10, with much debugging and I couldn't get it to work, so unless someone else wants to try, this is definitely the best option until a new compiled version is released._
