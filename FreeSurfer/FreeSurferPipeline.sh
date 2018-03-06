@@ -1,4 +1,4 @@
-#!/bin/bash 
+#!/bin/bash
 
 #~ND~FORMAT~MARKDOWN~
 #~ND~START~
@@ -50,7 +50,7 @@ show_tool_versions()
 	which fslmaths
 }
 
-# Show usage information 
+# Show usage information
 usage()
 {
 	cat <<EOF
@@ -62,15 +62,15 @@ Usage: ${g_script_name}: PARAMETER...
 PARAMETERs are: [ ] = optional; < > = user supplied value
 
   [--help] : show usage information and exit
-   
-  one from the following group is required 
+
+  one from the following group is required
 
      --subject-dir=<path to subject directory>
      --subjectDIR=<path to subject directory>
 
   --subject=<subject ID>
 
-  one from the following group is required 
+  one from the following group is required
 
      --t1w-image=<path to T1w image>
      --t1=<path to T1w image>
@@ -80,8 +80,8 @@ PARAMETERs are: [ ] = optional; < > = user supplied value
      --t1brain=<path to T1w brain mask>
      --t1w-brain=<path to T1w brain mask>
 
-  one from the following group is required 
- 
+  one from the following group is required
+
      --t2w-image=<path to T2w image>
      --t2=<path to T2w image>
 
@@ -164,7 +164,7 @@ get_options()
 				log_Err_Abort "unrecognized option: ${argument}"
 				;;
 		esac
-		
+
 	done
 
 	local error_count=0
@@ -197,7 +197,7 @@ get_options()
 	else
 		log_Msg "T1w Brain: ${p_t1w_brain}"
 	fi
-		
+
 	if [ -z "${p_t2w_image}" ]; then
 		log_Err "T2w Image (--t2w-image= or --t2=) required"
 		error_count=$(( error_count + 1 ))
@@ -209,7 +209,7 @@ get_options()
 	if [ ! -z "${p_seed}" ]; then
 		log_Msg "Seed: ${p_seed}"
 	fi
-	
+
 	if [ ${error_count} -gt 0 ]; then
 		log_Err_Abort "For usage information, use --help"
 	fi
@@ -234,7 +234,7 @@ main()
 	log_Msg "T1wImageBrain: ${T1wImageBrain}"
 	log_Msg "T2wImage: ${T2wImage}"
 	log_Msg "recon_all_seed: ${recon_all_seed}"
-	
+
 	# Figure out the number of cores to use.
 	# Both the SGE and PBS cluster schedulers use the environment variable NSLOTS to indicate the
 	# number of cores a job will use. If this environment variable is set, we will use it to
@@ -247,7 +247,7 @@ main()
 		num_cores="${NSLOTS}"
 	fi
 	log_Msg "num_cores: ${num_cores}"
-	
+
 	# Call recon-all
 	recon_all_cmd="recon-all.v6.hires"
 	recon_all_cmd+=" -i ${T1wImage}"
@@ -259,7 +259,7 @@ main()
 	recon_all_cmd+=" -openmp ${num_cores}"
 	recon_all_cmd+=" -all"
 	recon_all_cmd+=" -T2pial"
-	
+
 	if [ ! -z "${recon_all_seed}" ]; then
 		recon_all_cmd+=" -norandomness -rng-seed ${recon_all_seed}"
 	fi
@@ -270,7 +270,7 @@ main()
 	if [ "${return_code}" != "0" ]; then
 		log_Err_Abort "recon-all command failed with return_code: ${return_code}"
 	fi
-	
+
 	mridir=${SubjectDIR}/${SubjectID}/mri
 	log_Msg "Creating ${mridir}/transforms/eye.dat"
 	mkdir -p ${mridir}/transforms
@@ -286,7 +286,7 @@ main()
 	echo "round" >> "${mridir}"/transforms/eye.dat
 
 	log_Msg "Making T1w to T2w registration available in FSL format"
-	
+
 	pushd ${mridir}
 
 	log_Msg "...Create a registration between the original conformed space and the rawavg space"
@@ -320,17 +320,9 @@ main()
 	rm --verbose deleteme.dat
 	rm --verbose P.lta
 	rm --verbose Q.lta
-	
-	popd 
 
-	log_Msg "Generating QC file"
-	log_Msg "cmd: fslmaths ${mridir}/T1w_hires.nii.gz -mul ${mridir}/T2w_hires.nii.gz -sqrt ${mridir}/T1wMulT2w_hires.nii.gz"
-	fslmaths ${mridir}/T1w_hires.nii.gz -mul ${mridir}/T2w_hires.nii.gz -sqrt ${mridir}/T1wMulT2w_hires.nii.gz
-	return_code=$?
-	if [ "${return_code}" -ne "0" ]; then
-		log_Err_Abort "fslmaths command failed with return_code: ${return_code}"
-	fi
-	
+	popd
+
 	log_Msg "Completing main functionality"
 }
 
@@ -363,7 +355,7 @@ if [[ ${1} == --* ]]; then
 	# Invoke main functionality using positional parameters
 	#     ${1}               ${2}           ${3}             ${4}             ${5}             ${6}
 	main "${p_subject_dir}" "${p_subject}" "${p_t1w_image}" "${p_t1w_brain}" "${p_t2w_image}" "${p_seed}"
-	
+
 else
 	# Positional parameters are used
 	log_Msg "Using positional parameters"
